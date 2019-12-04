@@ -1,0 +1,17 @@
+a {
+    text-decoration: underline;
+    display: inline-block;
+    color: $secondary;
+    transition: all 300ms ease;
+
+    &:focus,
+    &:hover {
+        color: $primary;
+    }
+}
+
+@include media-breakpoint-down(md) {
+    h1 {
+        margin-bottom: $spacer;
+    }
+}
