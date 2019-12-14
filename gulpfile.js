@@ -47,6 +47,7 @@ var COMPATIBILITY = ['last 2 versions', 'ie >= 9'];
 
 var srcPath = 'app';
 var buildPath = '_dist';
+var releasePah = '_build';
 
 
 // =============================================================================
@@ -57,6 +58,9 @@ gulp.task('clean', function (done) {
     rimraf(buildPath, done);
 });
 
+gulp.task('clean:release', function (done) {
+    rimraf(releasePah, done);
+});
 
 // =============================================================================
 // Copy HTML
@@ -66,7 +70,10 @@ gulp.task('html', function () {
         .pipe(gulp.dest(buildPath));
 });
 
-
+gulp.task('html:release', function () {
+    gulp.src(srcPath + '/**/*.html')
+        .pipe(gulp.dest(releasePah));
+});
 // =============================================================================
 // Compile Sass into CSS
 // In production, the CSS is compressed
@@ -99,7 +106,7 @@ gulp.task('compile-sass:release', function () {
         }))
         .pipe(autoprefixer())
         .pipe(cssnano())
-        .pipe(gulp.dest(buildPath + '/css'));
+        .pipe(gulp.dest(releasePah + '/css'));
 });
 
 // =============================================================================
@@ -108,9 +115,9 @@ gulp.task('compile-sass:release', function () {
 // =============================================================================
 gulp.task('bundle-js:local', function () {
     return browserify({
-        entries: srcPath + '/js/index.js',
-        debug: true
-    })
+            entries: srcPath + '/js/index.js',
+            debug: true
+        })
         .transform(babelify)
         .bundle()
         .on('error', function (err) {
@@ -119,20 +126,25 @@ gulp.task('bundle-js:local', function () {
         })
         .pipe(source('bundle.js'))
         .pipe(buffer())
-        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(sourcemaps.init({
+            loadMaps: true
+        }))
         .pipe(sourcemaps.write('./maps'))
         .pipe(gulp.dest(buildPath + '/js'));
 });
 
 // without sourcemaps and minified
 gulp.task('bundle-js:release', function () {
-    return browserify({ entries: srcPath + '/js/index.js', debug: true })
+    return browserify({
+            entries: srcPath + '/js/index.js',
+            debug: true
+        })
         .transform(babelify)
         .bundle()
         .pipe(source('bundle.js'))
         .pipe(buffer())
         .pipe(uglify())
-        .pipe(gulp.dest(buildPath + '/js'));
+        .pipe(gulp.dest(releasePah + '/js'));
 });
 
 // =============================================================================
@@ -144,6 +156,12 @@ gulp.task('copy-assets', function () {
         .pipe(gulp.dest(buildPath + '/assets'));
 });
 
+gulp.task('copy-assets:release', function () {
+    return gulp
+        .src(srcPath + '/assets/**/*')
+        .pipe(gulp.dest(releasePah + '/assets'));
+});
+
 // =============================================================================
 // Copy and minifies images to the buildPath folder
 // In production, the images are compressed
@@ -152,7 +170,7 @@ gulp.task('minify-images', function () {
     return gulp
         .src(srcPath + '/assets/images/**/*')
         .pipe(imagemin())
-        .pipe(gulp.dest(buildPath + '/assets/images'));
+        .pipe(gulp.dest(releasePah + '/assets/images'));
 });
 
 
@@ -170,10 +188,10 @@ gulp.task('build:local', function (done) {
 
 gulp.task('build:release', function (done) {
     sequence('clean', [
-        'html',
+        'html:release',
         'compile-sass:release',
         'bundle-js:release',
-        'copy-assets',
+        'copy-assets:release',
         'minify-images',
     ], done);
 });
