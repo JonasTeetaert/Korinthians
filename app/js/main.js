@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const dom = {
 		background: document.querySelector('.t-panel'),
 		svg: document.querySelector('.t-panel__circles svg'),
-		center: document.querySelector('.t-panel__circles svg .center'),
+		center: document.querySelector('.t-panel__circles svg circle'),
 	};
 
 	let rect = dom.center.getBoundingClientRect();
