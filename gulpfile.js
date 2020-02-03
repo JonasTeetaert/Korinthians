@@ -54,7 +54,7 @@ var releasePah = '_build';
 // Delete the buildPath folder
 // This happens every time a build starts
 // =============================================================================
-gulp.task('clean', function (done) {
+gulp.task('clean:local', function (done) {
     rimraf(buildPath, done);
 });
 
@@ -65,7 +65,7 @@ gulp.task('clean:release', function (done) {
 // =============================================================================
 // Copy HTML
 // =============================================================================
-gulp.task('html', function () {
+gulp.task('html:local', function () {
     gulp.src(srcPath + '/**/*.html')
         .pipe(gulp.dest(buildPath));
 });
@@ -178,8 +178,8 @@ gulp.task('minify-images', function () {
 // Build the buildPath folder by running all of the above tasks
 // =============================================================================
 gulp.task('build:local', function (done) {
-    sequence('clean', [
-        'html',
+    sequence('clean:local', [
+        'html:local',
         'compile-sass:local',
         'bundle-js:local',
         'copy-assets',
@@ -187,7 +187,7 @@ gulp.task('build:local', function (done) {
 });
 
 gulp.task('build:release', function (done) {
-    sequence('clean', [
+    sequence('clean:release', [
         'html:release',
         'compile-sass:release',
         'bundle-js:release',
@@ -214,7 +214,7 @@ gulp.task('browser-sync', function () {
 // Build the site, run the server, and watch for file changes
 // =============================================================================
 gulp.task('default', ['build:local', 'browser-sync'], function () {
-    gulp.watch([srcPath + '/**/*.html'], ['html', browserSync.reload]);
+    gulp.watch([srcPath + '/**/*.html'], ['html:local', browserSync.reload]);
     gulp.watch([srcPath + '/styles/**/*.scss'], ['compile-sass:local', browserSync.reload]);
     gulp.watch([srcPath + '/js/**/*.js'], ['bundle-js:local', browserSync.reload]);
     gulp.watch([srcPath + '/assets/**/*'], ['copy-assets', browserSync.reload]);
